@@ -223,6 +223,43 @@ class BioConnect:
 		#    .../v2/users/<userId>/authenicators/<authenticatorId>
 		# and process the response
 
+		# Send our GET request to the server
+		url = 'https://%s/v2/users/' % hostname + self.userId + '/authenticators/' + self.authenticatorId
+		
+		headers = {
+			'Content-Type':		'application/json',
+			'accept':		'application/json',
+			'bcaccesskey':		self.bcaccesskey,
+			'bcentitykey':		self.bcentitykey,
+			'bctoken':		self.bctoken
+		}
+
+		result = requests.get(url, data={}, headers=headers)
+
+		if result == False:
+			# Error: we did not receive an HTTP/200
+			print(headers)
+			print(result.content)
+			sys.exit("Error: unable to get authenticator status")
+
+		try:
+			# Parse the JSON reply
+			reply = json.loads(result.content.decode('utf-8'))
+
+			# Extract the authentication tokens
+			status = reply.get("status","")
+			faceStatus = reply.get("face_status","")
+			voiceStatus = reply.get("voice_status","")
+			fingerprintStatus = reply.get("fingerprint_status","")
+			eyeStatus = reply.get("eye_status","")
+
+			if status == "active":
+				if faceStatus == "enrolled" or voiceStatus == "enrolled" or fingerprintStatus == "enrolled" or eyeStatus == "enrolled":
+					return('active')
+
+		except ValueError:
+			self.bctoken = ""
+
 		return('')
 
 
@@ -236,6 +273,42 @@ class BioConnect:
 		#     .../v2/user_verifications
 		# to push an authentication request to the mobile device
 
+		# Send our POST request to the server
+		url = 'https://%s/v2/user_verifications/' % hostname
+		
+		data = {
+			'user_uuid': self.userId,
+			'transaction_id': transactionId,
+			'message': message
+		}
+
+		headers = {
+			'Content-Type':		'application/json',
+			'accept':		'application/json',
+			'bcaccesskey':		self.bcaccesskey,
+			'bcentitykey':		self.bcentitykey,
+			'bctoken':		self.bctoken
+		}
+
+		result = requests.post(url, data=json.dumps(data), headers=headers)
+
+		if result == False:
+			# Error: we did not receive an HTTP/200
+			print(headers)
+			print(result.content)
+			sys.exit("Error: unable to set up authentication request")
+
+		try:
+			# Parse the JSON reply
+			reply = json.loads(result.content.decode('utf-8'))
+
+			# Extract the authentication tokens
+			userVerification = reply.get("user_verification","")
+			self.stepupId = userVerification.get("uuid")
+
+		except ValueError:
+			self.bctoken = ""
+		
 		pass
 
 	# ===== getStepupStatus: Fetches the status of the user auth request
@@ -245,6 +318,37 @@ class BioConnect:
 		# >>> Add code here to call
 		#     .../v2/user_verifications/<verificationId>
 		# to poll for the current status of the verification
+
+		# Send our GET request to the server
+		url = 'https://%s/v2/user_verifications/' % hostname + self.stepupId
+		
+		headers = {
+			'Content-Type':		'application/json',
+			'accept':		'application/json',
+			'bcaccesskey':		self.bcaccesskey,
+			'bcentitykey':		self.bcentitykey,
+			'bctoken':		self.bctoken
+		}
+
+		result = requests.get(url, data={}, headers=headers)
+
+		if result == False:
+			# Error: we did not receive an HTTP/200
+			print(headers)
+			print(result.content)
+			sys.exit("Error: unable to verify set up status")
+
+		try:
+			# Parse the JSON reply
+			reply = json.loads(result.content.decode('utf-8'))
+
+			# Extract the authentication tokens
+			userVerification = reply.get("user_verification","")
+			status = userVerification.get("status")
+			return(status)
+
+		except ValueError:
+			self.bctoken = ""
 
 		return('declined')
 
