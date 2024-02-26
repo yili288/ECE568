@@ -1,0 +1,18 @@
+#Yi Li Ng, 1005743741, yili.ng@mail.utoronto.ca
+#Jeff Li, 1005802801, jelicj.li@mail.utoronto.ca
+
+# Lab 2
+
+### Part 1 - generateQRcode
+1. Convert original secret in hex to bytes for passing into base32_encode
+2. The original hex is len 20, or 80 bits, or 10 bytes, which becomes len 80/5 = 16 when encoded
+3. The final uri is concatenated from the various components via urlEncode where needed
+
+### Part 1 - validateQRcode
+1. converts a 20 character hex secret into binary
+2. gets current time and create a time interval
+3. split the time into 8 bytes
+4. apply HMAC = H( (K ⊕ opad) + H((K ⊕ ipad) + M) ) and truncate to get TOTP value
+
+### Part 2 - Mobile Multi-Factor Authentication
+API for user logins with mobile two-factor authentication. Communicates with the device to check for account registration, send authentication requests and check for authentication status.
