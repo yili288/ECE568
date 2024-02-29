@@ -1,0 +1,30 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Client Side Filtering</title>
+<link rel="stylesheet" type="text/css" href="formate.css">
+</head>
+<body>
+<p><b>Lesson Plan Title:</b>Prompt By-Pass with CSRF
+<p>
+
+<p><b>Concept / Topic To Teach:</b>
+<p>
+This lesson teaches how to perform Cross Site Request Forgery (CSRF) attacks containing 
+multiple requests to by-pass a scriptable user-prompt
+
+<p>
+<b>General Goal(s):</b>
+<p>
+Similar to the CSRF Lesson, your goal is to send an email to a newsgroup that contains multiple 
+malicious requests: the first request to transfer funds, and the second request to confirm the prompt 
+that the first request triggered.  The URLs should point to the attack servlet with this lesson's numeric Screen, menu and with an extra 
+parameter "transferFunds=5000", and "transferFunds=CONFIRM". You can copy the shortcut from the 
+left hand menu by right clicking on the left hand menu and choosing copy shortcut. Whoever 
+receives this email and happens to be authenticated at that time will have his funds transferred. 
+When you think the attack is successful, refresh the page and you will find the green check on 
+the left hand side menu.
+<p>
+</body>
+</html>

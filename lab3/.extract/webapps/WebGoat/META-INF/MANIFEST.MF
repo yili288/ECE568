@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Implementation-Vendor: OWASP
+Implementation-Title: webgoat-container
+Implementation-Version: build
+Implementation-Vendor-Id: org.owasp.webgoat
+Built-By: ss
+Build-Jdk: 1.7.0_80
+Specification-Title: webgoat-container
+Created-By: Apache Maven 3.6.3
+Implementation-URL: https://github.com/WebGoat/WebGoat/webgoat-contain
+ er
+Specification-Version: 7.1
+Archiver-Version: Plexus Archiver
+

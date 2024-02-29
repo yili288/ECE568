@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>CSRF Token By-Pass</title>
+<link rel="stylesheet" type="text/css" href="formate.css">
+</head>
+<body>
+<p>
+<b>Lesson Plan Title:</b>CSRF Token By-Pass
+<p>
+<b>Concept / Topic To Teach:</b>
+<p>
+This lesson teaches how to perform CSRF attacks on sites that use tokens to mitigate CSRF attacks, but are vulnerable to CSS attacks.
+<p>
+Cross-Site Request Forgery (CSRF/XSRF) is an attack that tricks the victim into 
+loading a page that contains a 'forged request' to execute commands with the 
+victim's credentials. 
+<p>
+Token-based request authentication deters these attacks.  This technique 
+inserts tokens into pages that issue requests.  These tokens are required to 
+complete a request, and help verify that requests are not scripted.  CSRFGuard from OWASP uses 
+this technique to help prevent CSRF attacks.
+<p>
+However, this technique can be by-passed if CSS vulnerabilities exist on the same site.  
+Because of the same-origin browser policy, pages from the same domain can read content from 
+other pages from the same domain.
+<p>
+<b>General Goal(s):</b>
+<p>
+Similar to the CSRF Lesson, your goal is to send an email to a newsgroup that contains a malicious 
+request to transfer funds.  To successfully complete you need to obtain a valid request token.  The 
+URL that presents the transfer funds form is the same as the CSRF lesson with an extra parameter 
+"transferFunds=main".  Load this page, read the token and append the token in a forged request 
+to transferFunds. When you think the attack is successful, refresh the page and you will find the 
+green check on the left hand side menu.
+<p>
+</body>
+</html>
