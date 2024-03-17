@@ -7,7 +7,7 @@
 A fake HTML form is made with username and password fields for users to input their info. When they fill out the form and click submit, a JS script will execute and populate a URL with the submitted form info. 
 
 ### Part 2 Explanation:
-A script is inputted into the three-digit access code field, such that when a user clicks "Buy", they are redirected to a URL populated with their submitted credit card info. 
+A script is inputted into the three-digit access code field, such that when a user clicks "Buy", they are redirected to a URL containing their credit card info, which is obtainable with fetching the element's ID. 
 
 ### Part 3 Explanation:
 Since the contents of the email will be render on the screen after submitting, exploit this by putting a html image tag with the src as the attack url to the message of the email.
@@ -22,4 +22,8 @@ Since the contents of the email will be render on the screen after submitting, e
 The full where clause looks like this WHERE last_name='Smith' OR 'a'='a'. Smith is followed with a closing quote in order to extend the condition of the WEHRE clause. In this case, a condition that executes the WHERE clause always true is added in order to show all entries in the table.
 
 ### Part 7 Explanation:
+
+
 ### Part 8 Explanation:
+We use a SELECT query to try to narrow down the pin associated with the credit card number. After trial and error we get to 3318 as the value of the pin. See the SQL input below:
+101; SELECT * FROM credit WHERE pin>3317 AND pin<3319 AND cc_number=1234123412341234 --
