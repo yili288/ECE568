@@ -22,7 +22,7 @@ Since the contents of the email will be render on the screen after submitting, e
 The full where clause looks like this WHERE last_name='Smith' OR 'a'='a'. Smith is followed with a closing quote in order to extend the condition of the WEHRE clause. In this case, a condition that executes the WHERE clause always true is added in order to show all entries in the table.
 
 ### Part 7 Explanation:
-
+The first step requires the use of 'UPDATE' to set the salary to 999, while the second step requires the use of 'CREATE TRIGGER' to create a trigger. The email to be used is that of 2022 instead of 2024. Both steps require 101 as the userid value before a semicolon and an additional query. 
 
 ### Part 8 Explanation:
 We use a SELECT query to try to narrow down the pin associated with the credit card number. After trial and error we get to 3318 as the value of the pin. See the SQL input below:
