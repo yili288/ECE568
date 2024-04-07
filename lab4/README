@@ -1,0 +1,22 @@
+#Yi Li Ng, 1005743741, yili.ng@mail.utoronto.ca
+#Jeff Li, 1005802801, jelicj.li@mail.utoronto.ca
+
+Part 1 Explanation:
+The following were the commands used to obtain the answers to the questions. 
+dig utoronto.ca +short
+dig +short ns utoronto.ca
+dig ns2.d-zone.ca. +short
+dig ns1.d-zone.ca. +short
+dig utoronto.ca MX +short
+dig utoronto-ca.mail.protection.outlook.com. +short
+
+Part 2 Explanation:
+We need to be able to modify the NS records in the DNS response packet, so we loop through the packet. 
+A socket is also initialized to receive DNS queries, and we forward the query to the BIND server. 
+
+Part 3 Explanation:
+To spoof the DNS reply, we change various parameters of the DNS packet and send the modified response back to the original requester. 
+
+Part 4 Explanation:
+Making use of the core functionality from the exampleSendDNSQuery function, we first send a DNS query to the nameserver after the socket is initialized. 
+Then, we send a bunch of fake replies, setting a large enough TTL of 3600 and attempting with various random TX ID values. 

