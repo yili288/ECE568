@@ -18,5 +18,5 @@ Part 3 Explanation:
 Similar to part 2 but instead of sending the query to BIND, we made a spoof reply and sent that back to the user. To spoof the DNS reply, we change the answers and authoritative name servers of the DNS packet and send the modified response back to the original requester. By using 'dig @127.0.0.1 -p <dns_port> example.com' we can see the original reply from BIND and modify the DNS packet to have the same number of name servers and answers but with the malicious IP address and name server in the reply.
 
 Part 4 Explanation:
-Making use of the core functionality from the exampleSendDNSQuery function, we first send a DNS query to the nameserver after the socket is initialized. 
-Then, we send a bunch of fake replies, setting a large enough TTL of 3600 and attempting with various random TX ID values. 
+Making use of the core functionality from the exampleSendDNSQuery function, we first send a DNS query to BIND with a the format random_number.example.com (non-existed name server) after the socket is initialized. 
+Then, we send a bunch of fake replies to BIND, setting a large enough TTL of 3600 for each entry in the packet and attempting with various random query ID values. We try different values until the answer has the attack name server. 
