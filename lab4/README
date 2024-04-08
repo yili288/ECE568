@@ -11,11 +11,11 @@ dig utoronto.ca MX +short
 dig utoronto-ca.mail.protection.outlook.com. +short
 
 Part 2 Explanation:
-We need to be able to modify the NS records in the DNS response packet, so we loop through the packet. 
-A socket is also initialized to receive DNS queries, and we forward the query to the BIND server. 
+We start by creating a socket with the same IP as the BIND server but a different port number from BIND.
+This acts as the proxy DNS where dig messages will be received. Using a inifite while loop we can receive dig messages and send it to back to the local DNS port (ie. BIND). The reply from BIND is then sent back to the dig sender by the DNS proxy. 
 
 Part 3 Explanation:
-To spoof the DNS reply, we change various parameters of the DNS packet and send the modified response back to the original requester. 
+Similar to part 2 but instead of sending the query to BIND, we made a spoof reply and sent that back to the user. To spoof the DNS reply, we change the answers and authoritative name servers of the DNS packet and send the modified response back to the original requester. By using 'dig @127.0.0.1 -p <dns_port> example.com' we can see the original reply from BIND and modify the DNS packet to have the same number of name servers and answers but with the malicious IP address and name server in the reply.
 
 Part 4 Explanation:
 Making use of the core functionality from the exampleSendDNSQuery function, we first send a DNS query to the nameserver after the socket is initialized. 
